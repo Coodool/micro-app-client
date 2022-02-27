@@ -2,14 +2,15 @@
   <div>
     <div class="plugin" v-for="plugin in plugins" :key="plugin.name">
       <div>{{ plugin.name }}</div>
-      <button @click="onDelete">删除</button>
+      <button @click="onLaunch(plugin)">launch</button>
+      <button @click="onDelete(plugin)">delete</button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
-import {ipcRenderer} from "electron";
+import { ipcRenderer } from "electron";
 import { PluginMeta } from "../../types";
 
 @Component
@@ -17,14 +18,17 @@ export default class App extends Vue {
   plugins: Array<PluginMeta> = [];
 
   created() {
-    ipcRenderer.invoke("get-plugin-list").then(res=>{
-      console.log(res)
-    })
-    // this.plugins = PluginManager.getPluginsList();
+    ipcRenderer.invoke("get-plugin-list").then(res => {
+      this.plugins = res;
+    });
   }
 
-  onDelete() {
-    // ipcRenderer;
+  onDelete(plugin: PluginMeta) {
+    ipcRenderer.invoke("delete-plugin", plugin);
+  }
+
+  onLaunch(plugin: PluginMeta) {
+    ipcRenderer.invoke("launch-plugin", plugin);
   }
 }
 </script>
